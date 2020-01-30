@@ -1,3 +1,4 @@
+"use strict";
 const Sequelize = require("sequelize");
 
 module.exports = sequelize => {
@@ -32,7 +33,7 @@ module.exports = sequelize => {
 	);
 
 	User.associate = models => {
-		User.hasMany(models.Course);
+		User.hasMany(models.Course, { foreignKey: "userId" });
 	};
 	return User;
 };

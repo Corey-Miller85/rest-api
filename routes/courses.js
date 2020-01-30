@@ -35,4 +35,12 @@ router.get(
 	})
 );
 
+//GET route for /courses/:ID returns single Course
+router.get("/:id", async (req, res) => {
+	const course = await Course.findByPk(req.params.id, {
+		include: { model: User }
+	});
+	res.status(200).json(course);
+});
+
 module.exports = router;
