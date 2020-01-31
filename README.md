@@ -1,2 +1,2 @@
 \*\* TODO
-create validation on course model.
+put /course/:id fails tests
