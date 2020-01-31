@@ -3,15 +3,11 @@
 const express = require("express");
 const db = require("../db");
 const { User } = db;
-// const { User } = db;
-// const auth = require("basic-auth");
+const authenticateUser = require("../middleware/authenticateUser");
 const bcryptjs = require("bcryptjs");
 
-// Get references to our models.
-// const { User } = models;
 const router = express.Router();
 
-// Helper function to catch errors
 function asyncHandler(cb) {
 	return async (req, res, next) => {
 		try {
