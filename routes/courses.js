@@ -58,16 +58,12 @@ router.post(
 	authenticateUser,
 	asyncHandler(async (req, res) => {
 		//create a course
-		const newUser = await Course.create({
-			title: "Opeth is good",
-			description: "My course description",
-			userId: 1
-		});
-		//set status to 201
-		// res.status(201);
-		//set location header to '/'
-		// res.location("/");
-		res.end();
+		const newUser = await Course.create(req.body);
+		// set status to 201
+		// set location header to '/'
+		res.status(201)
+			.location("/")
+			.end();
 	})
 );
 
