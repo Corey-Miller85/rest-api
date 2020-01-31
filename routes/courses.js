@@ -72,9 +72,21 @@ router.put(
 	"/:id",
 	authenticateUser,
 	asyncHandler(async (req, res) => {
-		const found_course = await Course.findByPk(req.params.id);
-		await found_course.update(req.body);
-		res.status(204).end();
+		const coursePK = req.params.id;
+		const course = await Course.findByPk(coursePK);
+		console.log(course);
+		if (course) {
+			if (req.body.title && req.body.description) {
+				await Course.update(req.body);
+				res.status(204).end();
+			} else {
+				res.status(400).json(
+					"Please provide a title and description in request"
+				);
+			}
+		} else {
+			res.status(404).json("Course Not Found.");
+		}
 	})
 );
 //DELETE route for /courses/:id destorys course
