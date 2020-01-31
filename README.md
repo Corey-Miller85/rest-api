@@ -1,2 +1,2 @@
 \*\* TODO
-Impletment authentication...
+create validation on course model.

@@ -4,6 +4,7 @@ const { User } = db;
 const bcryptjs = require("bcryptjs");
 
 const authenticateUser = async (req, res, next) => {
+	let message = null;
 	// Parse the user's credentials from the Authorization header.
 	const credentials = auth(req);
 	// If the user's credentials are available...
