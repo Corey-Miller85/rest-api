@@ -1,9 +1,10 @@
 "use strict";
 
 const express = require("express");
-const { models } = require("../db");
-const { User } = models;
-const auth = require("basic-auth");
+const db = require("../db");
+const { User } = db;
+// const { User } = db;
+// const auth = require("basic-auth");
 const bcryptjs = require("bcryptjs");
 
 // Get references to our models.
@@ -32,46 +33,8 @@ function asyncHandler(cb) {
 	};
 }
 
-//setting up authenticator
-const authenticateUser = async (req, res, next) => {
-	let message = null;
-	const credentials = auth(req);
-	if (credentials) {
-		// const user = User.find(u => u.emailAddress === credentials.name);
-		const user = await User.findOne({
-			where: { emailAddress: credentials.name }
-		});
-		console.log(user);
-		if (user) {
-			const authenticated = bcryptjs.compareSync(
-				credentials.pass,
-				user.password
-			);
-			if (authenticated) {
-				console.log(
-					`Authentication successful for: ${user.emailAddress}`
-				);
-				req.currentUser = user;
-			} else {
-				message = `Could not authenticate ${user.emailAddress}`;
-			}
-		} else {
-			message = `Could not find the username: ${user.emailAddress}`;
-		}
-	} else {
-		message = `Authenticate header not found`;
-	}
-	if (message) {
-		console.warn(message);
-		res.status(401).json({ message: "Access denied" });
-	} else {
-		next();
-	}
-};
-
 router.get(
 	"/",
-	authenticateUser,
 	asyncHandler(async (req, res) => {
 		const users = await User.findAll();
 		res.status(200).json(users);
@@ -82,7 +45,7 @@ router.post(
 	"/",
 	asyncHandler(async (req, res) => {
 		const body = req.body;
-		const newUser = await User.create({
+		await User.create({
 			firstName: body.firstName,
 			lastName: body.lastName,
 			emailAddress: body.emailAddress,

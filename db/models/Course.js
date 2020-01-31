@@ -1,34 +1,45 @@
-const Sequelize = require("sequelize");
-
-module.exports = sequelize => {
-	class Course extends Sequelize.Model {}
-	Course.init(
-		{
-			id: {
-				type: Sequelize.INTEGER,
-				autoIncrement: true,
-				primaryKey: true
-			},
-			userId: {
-				type: Sequelize.STRING
-			},
-			title: {
-				type: Sequelize.STRING
-			},
-			description: {
-				type: Sequelize.TEXT
-			},
-			estimatedTime: {
-				type: Sequelize.STRING,
-				allowNull: true
-			},
-			materialsNeeded: {
-				type: Sequelize.STRING,
-				allowNull: true
+module.exports = (sequelize, DataTypes) => {
+	const Course = sequelize.define("Course", {
+		id: {
+			type: DataTypes.INTEGER,
+			primaryKey: true,
+			autoIncrement: true
+		},
+		title: {
+			type: DataTypes.STRING,
+			allowNull: false,
+			validate: {
+				notEmpty: {
+					msg: "Course title can not be empty, please provide a title"
+				},
+				notNull: {
+					msg: "Course title can not be null, Please provide a title"
+				}
 			}
 		},
-		{ sequelize }
-	);
+		description: {
+			type: DataTypes.TEXT,
+			allowNull: false,
+			validate: {
+				notEmpty: {
+					msg:
+						"Course description can not be empty, please provide a description"
+				},
+				notNull: {
+					msg:
+						"Course description can not be null, please provide a description"
+				}
+			}
+		},
+		estimatedTime: {
+			type: DataTypes.STRING,
+			allowNull: true
+		},
+		materialsNeeded: {
+			type: DataTypes.STRING,
+			allowNull: true
+		}
+	});
 	Course.associate = models => {
 		Course.belongsTo(models.User, { foreignKey: "userId" });
 	};

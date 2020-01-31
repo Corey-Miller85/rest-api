@@ -1,39 +1,61 @@
-"use strict";
-const Sequelize = require("sequelize");
-
-module.exports = sequelize => {
-	class User extends Sequelize.Model {}
-	User.init(
-		{
-			id: {
-				type: Sequelize.INTEGER,
-				autoIncrement: true,
-				primaryKey: true
-			},
-			firstName: {
-				type: Sequelize.STRING,
-				allowNull: false
-			},
-			lastName: {
-				type: Sequelize.STRING,
-				allowNull: false
-			},
-			//Check to see that email is a string, is not null,  and does not exsist in DB already.
-			emailAddress: {
-				type: Sequelize.STRING,
-				allowNull: false,
-				isUnique: true
-			},
-			password: {
-				type: Sequelize.STRING,
-				allowNull: false
+module.exports = (sequelize, DataTypes) => {
+	const User = sequelize.define("User", {
+		id: {
+			type: DataTypes.INTEGER,
+			primaryKey: true,
+			autoIncrement: true
+		},
+		firstName: {
+			type: DataTypes.STRING,
+			allowNull: false,
+			validate: {
+				notNull: {
+					msg: "First name cannot be empty"
+				}
 			}
 		},
-		{ sequelize }
-	);
-
+		lastName: {
+			type: DataTypes.STRING,
+			allowNull: false,
+			validate: {
+				notNull: {
+					msg: "Last name can not be empty"
+				}
+			}
+		},
+		emailAddress: {
+			type: DataTypes.STRING,
+			unique: {
+				args: true,
+				msg:
+					"Oops. Looks like you already have an account with this email address. Please try to login."
+			},
+			allowNull: false,
+			validate: {
+				notNull: {
+					msg: "E-mail cannot be empty"
+				},
+				isEmail: {
+					args: true,
+					msg:
+						"The email you entered is invalid or is already in our system."
+				}
+			}
+		},
+		password: {
+			type: DataTypes.STRING,
+			allowNull: false,
+			validate: {
+				notNull: {
+					msg: "Password can not be empty"
+				}
+			}
+		}
+	});
 	User.associate = models => {
-		User.hasMany(models.Course, { foreignKey: "userId" });
+		User.hasMany(models.Course, {
+			foreignKey: "userId"
+		});
 	};
 	return User;
 };

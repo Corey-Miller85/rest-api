@@ -1,8 +1,8 @@
 "use strict";
 
 const express = require("express");
-const { models } = require("../db");
-const { User, Course } = models;
+const db = require("../db");
+const { User, Course } = db;
 const router = express.Router();
 
 function asyncHandler(cb) {
@@ -29,18 +29,64 @@ function asyncHandler(cb) {
 router.get(
 	"/",
 	asyncHandler(async (req, res) => {
-		const user = await Course.findAll({});
+		const user = await Course.findAll({
+			include: [{ model: User }]
+		});
 		const list = user.map(course => course.toJSON());
-		res.json(list).end();
+		res.status(200)
+			.json(list)
+			.end();
 	})
 );
 
 //GET route for /courses/:ID returns single Course
 router.get("/:id", async (req, res) => {
 	const course = await Course.findByPk(req.params.id, {
-		include: { model: User }
+		include: [
+			{
+				model: User
+			}
+		]
 	});
 	res.status(200).json(course);
 });
+
+//POST route for /courses creates course
+router.post(
+	"/",
+	asyncHandler(async (req, res) => {
+		//create a course
+		const newUser = await Course.create({
+			title: "Opeth is good",
+			description: "My course description",
+			userId: 1
+		});
+		//set status to 201
+		// res.status(201);
+		//set location header to '/'
+		// res.location("/");
+		res.end();
+	})
+);
+
+//PUT route for /courses/:id updates course
+router.put(
+	"/:id",
+	asyncHandler(async (req, res) => {
+		const found_course = await Course.findByPk(req.params.id);
+		await found_course.update(req.body);
+		res.status(204).end();
+	})
+);
+//DELETE route for /courses/:id destorys course
+
+router.delete(
+	"/:id",
+	asyncHandler(async (req, res) => {
+		const found_course = await Course.findByPk(req.params.id);
+		await found_course.destory(req.body);
+		res.status(204).end();
+	})
+);
 
 module.exports = router;
