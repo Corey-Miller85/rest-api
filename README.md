@@ -1,2 +1,4 @@
-\*\* TODO
-put /course/:id fails tests
+* Done
+Basic Funtionality, Passed Tests.
+* Todo
+

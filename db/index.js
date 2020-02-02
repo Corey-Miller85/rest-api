@@ -10,6 +10,15 @@ sequelize = new Sequelize({
 	storage: "fsjstd-restapi.db"
 });
 
+sequelize
+	.authenticate()
+	.then(function(err) {
+		console.log("Connection has been established successfully.");
+	})
+	.catch(function(err) {
+		console.log("Unable to connect to the database:", err);
+	});
+
 fs.readdirSync(path.join(__dirname, "models")).forEach(file => {
 	console.info(`Importing database model from file: ${file}`);
 	const model = sequelize.import(path.join(__dirname, "models", file));

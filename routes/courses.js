@@ -31,6 +31,7 @@ router.get(
 	"/",
 	asyncHandler(async (req, res) => {
 		const user = await Course.findAll({
+			attributes: { exclude: ["createdAt", "updatedAt"] },
 			include: [{ model: User }]
 		});
 		const list = user.map(course => course.toJSON());
@@ -43,11 +44,8 @@ router.get(
 //GET route for /courses/:ID returns single Course
 router.get("/:id", async (req, res) => {
 	const course = await Course.findByPk(req.params.id, {
-		include: [
-			{
-				model: User
-			}
-		]
+		attributes: { exclude: ["createdAt", "updatedAt"] },
+		include: [{ model: User }]
 	});
 	res.status(200).json(course);
 });
@@ -62,7 +60,7 @@ router.post(
 		// set status to 201
 		// set location header to '/'
 		res.status(201)
-			.location("/")
+			.location("/" + req.params.id)
 			.end();
 	})
 );
@@ -74,11 +72,12 @@ router.put(
 	asyncHandler(async (req, res) => {
 		const coursePK = req.params.id;
 		const course = await Course.findByPk(coursePK);
-		console.log(course);
 		if (course) {
 			if (req.body.title && req.body.description) {
-				await Course.update(req.body);
-				res.status(204).end();
+				await course.update(req.body);
+				res.status(204)
+					.location("/")
+					.end();
 			} else {
 				res.status(400).json(
 					"Please provide a title and description in request"
