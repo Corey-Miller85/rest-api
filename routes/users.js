@@ -42,15 +42,30 @@ router.post(
 	"/",
 	asyncHandler(async (req, res) => {
 		const body = req.body;
-		await User.create({
-			firstName: body.firstName,
-			lastName: body.lastName,
-			emailAddress: body.emailAddress,
-			password: bcryptjs.hashSync(req.body.password)
-		});
-		res.status(201)
-			.location("/")
-			.end();
+		if (!body.password) {
+			res.json("Please provide a Password.")
+				.status(400)
+				.end();
+		} else {
+			await User.create({
+				firstName: body.firstName,
+				lastName: body.lastName,
+				emailAddress: body.emailAddress,
+				password: bcryptjs.hashSync(req.body.password)
+			});
+			res.status(201)
+				.location("/")
+				.end();
+		}
+		// await User.create({
+		// 	firstName: body.firstName,
+		// 	lastName: body.lastName,
+		// 	emailAddress: body.emailAddress,
+		// 	password: bcryptjs.hashSync(req.body.password)
+		// });
+		// res.status(201)
+		// 	.location("/")
+		// 	.end();
 	})
 );
 module.exports = router;
