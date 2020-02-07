@@ -1,5 +1,7 @@
--   Done
-    Corrected issue with put request on courses.
-    corrected issue with server showing connection being established or not.
--   Todo
-    add validation, not authentication to /users/ post.
+React API Backend Project.
+Now version 1.0!
+
+-   Corrected bugs with validation
+-   killed bug with fire, updating user in database.
+
+Passes tests with Postman.

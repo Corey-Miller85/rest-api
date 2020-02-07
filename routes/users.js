@@ -3,6 +3,7 @@
 const express = require("express");
 const db = require("../db");
 const { User } = db;
+const { check, validationResult } = require("express-validator/check");
 const authenticateUser = require("../middleware/authenticateUser");
 const bcryptjs = require("bcryptjs");
 
@@ -29,6 +30,24 @@ function asyncHandler(cb) {
 	};
 }
 
+const nameValidationChain = check("firstName")
+	.exists({
+		checkNull: true,
+		checkFalsy: true
+	})
+	.withMessage("Please provide a value for 'firstName'");
+const lastNameValidationChain = check("lastName")
+	.exists({ checkNull: true, checkFalsy: true })
+	.withMessage("Please enter a value for 'lastName'");
+
+const emailValidationChain = check("emailAddress")
+	.exists({ checkNull: true, checkFalsy: true })
+	.withMessage("Please enter a value for 'emailAddress'");
+
+const passwordValidationChain = check("password")
+	.exists({ checkNull: true, checkFalsy: true })
+	.withMessage("Please enter a value for 'password'");
+
 router.get(
 	"/",
 	authenticateUser,
@@ -40,13 +59,17 @@ router.get(
 
 router.post(
 	"/",
+	nameValidationChain,
+	lastNameValidationChain,
+	emailValidationChain,
+	passwordValidationChain,
 	asyncHandler(async (req, res) => {
-		const body = req.body;
-		if (!body.password) {
-			res.json("Please provide a Password.")
-				.status(400)
-				.end();
+		const errors = validationResult(req);
+		if (!errors.isEmpty()) {
+			const errorMessages = errors.array().map(error => error.msg);
+			res.status(400).json({ errors: errorMessages });
 		} else {
+			const body = req.body;
 			await User.create({
 				firstName: body.firstName,
 				lastName: body.lastName,
@@ -57,15 +80,6 @@ router.post(
 				.location("/")
 				.end();
 		}
-		// await User.create({
-		// 	firstName: body.firstName,
-		// 	lastName: body.lastName,
-		// 	emailAddress: body.emailAddress,
-		// 	password: bcryptjs.hashSync(req.body.password)
-		// });
-		// res.status(201)
-		// 	.location("/")
-		// 	.end();
 	})
 );
 module.exports = router;
