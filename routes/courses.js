@@ -60,7 +60,7 @@ router.post(
 		// set status to 201
 		// set location header to '/'
 		res.status(201)
-			.location("/" + req.params.id)
+			.location("/" + newUser.id)
 			.end();
 	})
 );

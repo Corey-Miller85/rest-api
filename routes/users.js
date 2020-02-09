@@ -52,7 +52,7 @@ router.get(
 	"/",
 	authenticateUser,
 	asyncHandler(async (req, res) => {
-		const users = await User.findAll();
+		const users = await User.findByPk(req.currentUser.id);
 		res.status(200).json(users);
 	})
 );
